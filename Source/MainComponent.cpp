@@ -29,6 +29,7 @@ MainComponent::MainComponent()
 
 MainComponent::~MainComponent()
 {
+
 }
 
 //==============================================================================
@@ -65,10 +66,21 @@ void MainComponent::resized()
 void MainComponent::updateTextEditors()
 {
     // Verify whatever is input into offsetInput
-    // Parse that offset into seconds.
-
-    // Then go through the markers, add up that 
     int offset = 0;
+    if (!offsetInput.isEmpty())
+    {
+        auto timeInSecs = markerManager.parseTimeToSecs(offsetInput.getText());
+        if (timeInSecs.has_value())
+        {
+            offset = static_cast<int>(std::round(timeInSecs.value()));
+        }
+        else
+        {
+            DBG("Could not parse input!");
+            return;
+        }
+    }
+    // Then go through the markers, add up that 
 
     // Go through all the markers and build up the text. 
     juce::String YT_TimeStamps = "";
@@ -79,9 +91,9 @@ void MainComponent::updateTextEditors()
         juce::String newMarkerStartTS = markerManager.parseSecsToTime(marker.startTimeS + offset);
 
         // YT Entry: "name: HH:MM:SS"
-        YT_TimeStamps << marker.name;
-        YT_TimeStamps << ": ";
         YT_TimeStamps << newMarkerStartTS;
+        YT_TimeStamps << " ";
+        YT_TimeStamps << marker.name;
 
         // FS Entry: "#HH:MM:SS - name"
         FS_TimeStamps << '#';

@@ -12,7 +12,6 @@ namespace Marker
 	class MarkerManager
 	{
 	public:
-
 		void readFile(juce::File& file)
 		{
 			juce::FileInputStream stream(file);
@@ -36,7 +35,7 @@ namespace Marker
 			int it = 0;
 			while (!stream.isExhausted())
 			{
-				DBG("Reading Entry: " + std::to_string(it) + " ========");
+				// DBG("Reading Entry: " + std::to_string(it) + " ========");
 				juce::String line = stream.readNextLine();
 
 				// Marker entries have fields split by tabs...
@@ -46,10 +45,10 @@ namespace Marker
 				// Let's begin building our marker...
 				Marker m;
 				m.name = fields[0];
-				m.startTimeS = parseTimeToSecs(fields[1]);
+				m.startTimeS = parseTimeToSecs(fields[1]).value();
 				if (fields[2].isNotEmpty())
 				{
-					m.endTimeS = parseTimeToSecs(fields[2]);
+					m.endTimeS = parseTimeToSecs(fields[2]).value();
 				}
 
 				it++;
@@ -60,13 +59,29 @@ namespace Marker
 		}
 
 		// Parses time in "HH:MM::SS.mmm", "MM:SS.mmm" or "SS.mmm" to just seconds. 
-		double parseTimeToSecs(const juce::String& time)
+		std::optional<double> parseTimeToSecs(const juce::String& time)
 		{
 			auto parts = juce::StringArray::fromTokens(time, ":", "");
 
 			int hours = 0;
 			int mins = 0;
 			double secs = 0;
+
+			// Ensure the possible inputs.
+			if (parts.size() < 1 || parts.size() > 3)
+			{
+				DBG("Not proper formatting...");
+				return std::nullopt;
+			}
+
+			for (auto part : parts)
+			{
+				if (!part.containsOnly("0123456789."))
+				{
+					DBG("Contains invalid character...");
+					return std::nullopt;
+				}
+			}
 
 			switch (parts.size())
 			{
