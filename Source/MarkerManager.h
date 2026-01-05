@@ -1,6 +1,5 @@
 #pragma once
 
-// TODO: Now that we have all the markers, we have to figure out how to display them, and then incrementing the time. 
 namespace Marker
 {
 	struct Marker
@@ -94,12 +93,12 @@ namespace Marker
 			timeInSecs = std::round(timeInSecs * 1000.0) / 1000.0; // Round to the 3RD decimal place.
 
 			DBG("Time (seconds): " + juce::String(timeInSecs));
-			DBG("Time (Formatted)" + parseSecsToTime(timeInSecs));
 			return timeInSecs;
 		}
 
+		// Takes in time in secs and outputs in HH::MM::SS or HH::MM::SS.mmm format. 
 		// Undoes parseTimeTosecs() 
-		juce::String parseSecsToTime(const double seconds)
+		juce::String parseSecsToTime(const double seconds, bool roundToNearestSec=true)
 		{
 
 			int hours = static_cast<int>(seconds / 3600.0);
@@ -109,8 +108,18 @@ namespace Marker
 			timeStamp << juce::String(hours).paddedLeft('0', 2)
 				<< ":"
 				<< juce::String(mins).paddedLeft('0', 2)
-				<< ":"
-				<< juce::String(secs).paddedLeft('0', 6);
+				<< ":";
+
+			// Decide whih format you want output.
+			if (roundToNearestSec)
+			{
+				timeStamp << juce::String(static_cast<int>(std::round(secs))).paddedLeft('0', 2);
+			}
+			else
+			{
+				timeStamp << juce::String(secs).paddedLeft('0', 6);
+			}
+
 			return timeStamp;
 		}
 
@@ -118,6 +127,7 @@ namespace Marker
 		{
 			return markers;
 		}
+
 	private:
 		juce::Array<Marker> markers;
 	};

@@ -76,15 +76,22 @@ void MainComponent::updateTextEditors()
 
     for (auto marker : markerManager.getMarkers())
     {
-        // Update YT Format
-        YT_TimeStamps = marker.name;
-        int markerStartS = marker.startTimeS + offset;
+        juce::String newMarkerStartTS = markerManager.parseSecsToTime(marker.startTimeS + offset);
 
-        // Update FS Format
+        // YT Entry: "name: HH:MM:SS"
+        YT_TimeStamps << marker.name;
+        YT_TimeStamps << ": ";
+        YT_TimeStamps << newMarkerStartTS;
+
+        // FS Entry: "#HH:MM:SS - name"
+        FS_TimeStamps << '#';
+        FS_TimeStamps << newMarkerStartTS;
+        FS_TimeStamps << " - ";
+        FS_TimeStamps << marker.name;
 
         // After every marker, make a new line
-        YT_TimeStamps += '\n';
-        FS_TimeStamps += '\n';
+        YT_TimeStamps << '\n';
+        FS_TimeStamps << '\n';
     }
 
     YTFormat.setText(YT_TimeStamps);
