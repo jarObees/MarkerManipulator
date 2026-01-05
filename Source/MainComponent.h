@@ -37,6 +37,7 @@ private:
     void textEditorReturnKeyPressed(juce::TextEditor& editor) override;
     void textEditorFocusLost(juce::TextEditor& editor) override;
 
+    void updateTextEditors();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

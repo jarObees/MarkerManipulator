@@ -60,10 +60,7 @@ namespace Marker
 			}
 		}
 
-	private:
-		juce::Array<Marker> markers;
-
-		// Parses time in "HH:MM::SS.00000000", "MM:SS.00000000" or "SS.00000000" to just seconds. 
+		// Parses time in "HH:MM::SS.mmm", "MM:SS.mmm" or "SS.mmm" to just seconds. 
 		double parseTimeToSecs(const juce::String& time)
 		{
 			auto parts = juce::StringArray::fromTokens(time, ":", "");
@@ -74,29 +71,54 @@ namespace Marker
 
 			switch (parts.size())
 			{
-			// if SS.
+				// if SS.
 			case 1:
 				secs = parts[0].getDoubleValue();
 				break;
 
-			// If MM::SS.
+				// If MM::SS.
 			case 2:
 				mins = parts[0].getIntValue();
 				secs = parts[1].getDoubleValue();
 				break;
 
-			// If HH::MM:SS.
+				// If HH::MM:SS.
 			case 3:
 				hours = parts[0].getIntValue();
 				mins = parts[1].getIntValue();
 				secs = parts[2].getDoubleValue();
 				break;
 			}
-			
-			// There's up to 8 digit precision. Will the extra digits cause problems?
+
 			double timeInSecs = hours * 3600.0 + mins * 60.0 + secs;
-			DBG("Time: " + juce::String(timeInSecs));
+			timeInSecs = std::round(timeInSecs * 1000.0) / 1000.0; // Round to the 3RD decimal place.
+
+			DBG("Time (seconds): " + juce::String(timeInSecs));
+			DBG("Time (Formatted)" + parseSecsToTime(timeInSecs));
 			return timeInSecs;
 		}
+
+		// Undoes parseTimeTosecs() 
+		juce::String parseSecsToTime(const double seconds)
+		{
+
+			int hours = static_cast<int>(seconds / 3600.0);
+			int mins = static_cast<int>(std::fmod(seconds, 3600.0) / 60.0);
+			double secs = std::fmod(seconds, 60.0);
+			juce::String timeStamp;
+			timeStamp << juce::String(hours).paddedLeft('0', 2)
+				<< ":"
+				<< juce::String(mins).paddedLeft('0', 2)
+				<< ":"
+				<< juce::String(secs).paddedLeft('0', 6);
+			return timeStamp;
+		}
+
+		const juce::Array<Marker>& getMarkers() const
+		{
+			return markers;
+		}
+	private:
+		juce::Array<Marker> markers;
 	};
 }

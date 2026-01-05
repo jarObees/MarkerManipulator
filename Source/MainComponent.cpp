@@ -62,6 +62,35 @@ void MainComponent::resized()
     FSFormat.setBounds(rightSpace);
 }
 
+void MainComponent::updateTextEditors()
+{
+    // Verify whatever is input into offsetInput
+    // Parse that offset into seconds.
+
+    // Then go through the markers, add up that 
+    int offset = 0;
+
+    // Go through all the markers and build up the text. 
+    juce::String YT_TimeStamps = "";
+    juce::String FS_TimeStamps = "";
+
+    for (auto marker : markerManager.getMarkers())
+    {
+        // Update YT Format
+        YT_TimeStamps = marker.name;
+        int markerStartS = marker.startTimeS + offset;
+
+        // Update FS Format
+
+        // After every marker, make a new line
+        YT_TimeStamps += '\n';
+        FS_TimeStamps += '\n';
+    }
+
+    YTFormat.setText(YT_TimeStamps);
+    FSFormat.setText(FS_TimeStamps);
+
+}
 void MainComponent::textEditorTextChanged(juce::TextEditor& editor)
 {
 
@@ -74,7 +103,10 @@ void MainComponent::textEditorFocusLost(juce::TextEditor& editor)
 
 void MainComponent::textEditorReturnKeyPressed(juce::TextEditor& editor)
 {
-
+    if (&editor == &offsetInput)
+    {
+        updateTextEditors();
+    }
 }
 
 // Stuff for file dropping shenanigans ============================================================
@@ -90,6 +122,7 @@ void MainComponent::filesDropped(const juce::StringArray& files, int, int)
     if (file.existsAsFile())
     {
         markerManager.readFile(file);
+        updateTextEditors();
         repaint();
     }
 }
