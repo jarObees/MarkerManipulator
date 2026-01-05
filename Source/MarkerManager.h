@@ -7,7 +7,7 @@ namespace Marker
 	{
 		juce::String name = "";
 		double startTimeS = 0.0;
-		juce::Optional<double> endTimeS;
+		std::optional<double> endTimeS;
 	};
 
 	class MarkerManager
@@ -37,7 +37,7 @@ namespace Marker
 			int it = 0;
 			while (!stream.isExhausted())
 			{
-				DBG("Reading Entry: " + std::to_string(it) + "========");
+				DBG("Reading Entry: " + std::to_string(it) + " ========");
 				juce::String line = stream.readNextLine();
 
 				// Marker entries have fields split by tabs...
@@ -55,26 +55,43 @@ namespace Marker
 
 				it++;
 
-				// Let's add the marker...
+				// Let's add the marker to our main marker array.
 				markers.add(m);
-				DBG(juce::String(markers[0].startTimeS));
 			}
 		}
 
 	private:
 		juce::Array<Marker> markers;
+
+		// Parses time in "HH:MM::SS.00000000", "MM:SS.00000000" or "SS.00000000" to just seconds. 
 		double parseTimeToSecs(const juce::String& time)
 		{
 			auto parts = juce::StringArray::fromTokens(time, ":", "");
-			if (parts.size() != 3)
-			{
-				DBG("Incorrect start or end time string parsing...");
-				return 0.0;
-			}
 
-			const int hours = parts[0].getIntValue();
-			const int mins = parts[1].getIntValue();
-			const double secs = parts[2].getDoubleValue();
+			int hours = 0;
+			int mins = 0;
+			double secs = 0;
+
+			switch (parts.size())
+			{
+			// if SS.
+			case 1:
+				secs = parts[0].getDoubleValue();
+				break;
+
+			// If MM::SS.
+			case 2:
+				mins = parts[0].getIntValue();
+				secs = parts[1].getDoubleValue();
+				break;
+
+			// If HH::MM:SS.
+			case 3:
+				hours = parts[0].getIntValue();
+				mins = parts[1].getIntValue();
+				secs = parts[2].getDoubleValue();
+				break;
+			}
 			
 			// There's up to 8 digit precision. Will the extra digits cause problems?
 			double timeInSecs = hours * 3600.0 + mins * 60.0 + secs;
