@@ -39,8 +39,8 @@ void MainComponent::filesDropped(const juce::StringArray& files, int, int)
 
     if (file.existsAsFile())
     {
-        juce::String fileText = file.loadFileAsString();
-        DBG("FILE WAS SUCCESFULLY DROPPED!");
+        markerManager.readFile(file);
+
         repaint();
     }
 }

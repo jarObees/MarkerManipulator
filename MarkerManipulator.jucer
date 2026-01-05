@@ -4,8 +4,7 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" defines="JIVE_GUI_ITEMS_HAVE_STYLE_SHEETS=1&#10;">
   <MAINGROUP id="xqrcRP" name="MarkerManipulator">
     <GROUP id="{3E5B661D-D044-E56A-1B3A-8F6CA4FC04F2}" name="Source">
-      <FILE id="AjRvTb" name="FileLoadingManager.h" compile="0" resource="0"
-            file="Source/FileLoadingManager.h"/>
+      <FILE id="uNTZrN" name="MarkerManager.h" compile="0" resource="0" file="Source/MarkerManager.h"/>
       <FILE id="imREnP" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="dbD9Jz" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="OsqzbW" name="MainComponent.cpp" compile="1" resource="0"
