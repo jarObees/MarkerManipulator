@@ -8,7 +8,8 @@
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent  : public juce::Component, public juce::FileDragAndDropTarget
+class MainComponent : public juce::Component, public juce::FileDragAndDropTarget,
+    private juce::TextEditor::Listener
 {
 public:
     //==============================================================================
@@ -27,6 +28,15 @@ private:
     //==============================================================================
     // Your private member variables go here...
     Marker::MarkerManager markerManager;
+
+    juce::TextEditor offsetInput;
+    juce::TextEditor YTFormat;
+    juce::TextEditor FSFormat;
+
+    void textEditorTextChanged(juce::TextEditor& editor) override;
+    void textEditorReturnKeyPressed(juce::TextEditor& editor) override;
+    void textEditorFocusLost(juce::TextEditor& editor) override;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
