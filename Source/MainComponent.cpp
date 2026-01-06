@@ -69,10 +69,22 @@ void MainComponent::updateTextEditors()
     int offset = 0;
     if (!offsetInput.isEmpty())
     {
-        auto timeInSecs = markerManager.parseTimeToSecs(offsetInput.getText());
+        juce::String uInput = offsetInput.getText();
+        bool isNegative = false;
+
+        // Handling negative inputs
+        if (uInput.startsWith("-"))
+        {
+            isNegative = true;
+            uInput = uInput.trimCharactersAtStart("-");
+        }
+
+        auto timeInSecs = markerManager.parseTimeToSecs(uInput);
         if (timeInSecs.has_value())
         {
             offset = static_cast<int>(std::round(timeInSecs.value()));
+            if (isNegative)
+                offset = offset * -1;
         }
         else
         {
@@ -80,7 +92,6 @@ void MainComponent::updateTextEditors()
             return;
         }
     }
-    // Then go through the markers, add up that 
 
     // Go through all the markers and build up the text. 
     juce::String YT_TimeStamps = "";
@@ -88,7 +99,11 @@ void MainComponent::updateTextEditors()
 
     for (auto marker : markerManager.getMarkers())
     {
-        juce::String newMarkerStartTS = markerManager.parseSecsToTime(marker.startTimeS + offset);
+        double newStartTime = marker.startTimeS + offset;
+        if (newStartTime < 0)
+            newStartTime = 0.0;
+
+        juce::String newMarkerStartTS = markerManager.parseSecsToTime(newStartTime);
 
         // YT Entry: "name: HH:MM:SS"
         YT_TimeStamps << newMarkerStartTS;
