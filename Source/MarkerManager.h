@@ -5,13 +5,20 @@ namespace Marker
 	struct Marker
 	{
 		juce::String name = "";
-		double startTimeS = 0.0;
-		std::optional<double> endTimeS;
+		double startTimeS = 0.0; // In seconds
+		std::optional<double> endTimeS; // In seconds
+	};
+
+	enum class TimeFormat
+	{
+		HHMMSS,
+		MMSS
 	};
 
 	class MarkerManager
 	{
 	public:
+
 		void readFile(juce::File& file)
 		{
 			juce::FileInputStream stream(file);
@@ -112,29 +119,37 @@ namespace Marker
 		}
 
 		// Takes in time in secs and outputs in HH::MM::SS or HH::MM::SS.mmm format. 
-		// Undoes parseTimeTosecs() 
-		juce::String parseSecsToTime(const double seconds, bool roundToNearestSec=true)
+		// Undoes parseTimeTosecs()
+		juce::String parseSecsToTime(const double seconds, TimeFormat format)
 		{
-
-			int hours = static_cast<int>(seconds / 3600.0);
-			int mins = static_cast<int>(std::fmod(seconds, 3600.0) / 60.0);
-			double secs = std::fmod(seconds, 60.0);
 			juce::String timeStamp;
-			timeStamp << juce::String(hours).paddedLeft('0', 2)
-				<< ":"
-				<< juce::String(mins).paddedLeft('0', 2)
-				<< ":";
-
-			// Decide whih format you want output.
-			if (roundToNearestSec)
+			switch (format)
 			{
-				timeStamp << juce::String(static_cast<int>(std::round(secs))).paddedLeft('0', 2);
-			}
-			else
-			{
-				timeStamp << juce::String(secs).paddedLeft('0', 6);
+			case TimeFormat::HHMMSS:
+				{
+					int hours = static_cast<int>(seconds / 3600.0);
+					int mins = static_cast<int>(std::fmod(seconds, 3600.0) / 60.0);
+					double secs = std::fmod(seconds, 60.0);							// Ex. 72 seconds would be 00:01:12. This gets us the "12"
+					timeStamp << juce::String(hours).paddedLeft('0', 2)				// So that, say, "4" becomes "04"
+						<< ":"
+						<< juce::String(mins).paddedLeft('0', 2)
+						<< ":";
+					timeStamp << juce::String(static_cast<int>(std::round(secs))).paddedLeft('0', 2);
+					break;
+				}
+			case TimeFormat::MMSS:
+				{
+					int mins = static_cast<int>(seconds / 60.0);
+					double secs = std::fmod(seconds, 60.0);
+					timeStamp << juce::String(mins).paddedLeft('0', 2)
+						<< ":";
+					timeStamp << juce::String(static_cast<int>(std::round(secs))).paddedLeft('0', 2);
+					break;
+				}
 			}
 
+			// If not rounding to nearest second.
+			//timeStamp << juce::String(secs).paddedLeft('0', 6);
 			return timeStamp;
 		}
 

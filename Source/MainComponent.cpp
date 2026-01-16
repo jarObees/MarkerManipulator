@@ -99,20 +99,18 @@ void MainComponent::updateTextEditors()
 
     for (auto marker : markerManager.getMarkers())
     {
-        double newStartTime = marker.startTimeS + offset;
+        double newStartTime = marker.startTimeS + offset; // Use this for all new marker start calculations.
         if (newStartTime < 0)
-            newStartTime = 0.0;
-
-        juce::String newMarkerStartTS = markerManager.parseSecsToTime(newStartTime);
+            newStartTime = 0.0;;
 
         // YT Entry: "name: HH:MM:SS"
-        YT_TimeStamps << newMarkerStartTS;
+        YT_TimeStamps << markerManager.parseSecsToTime(newStartTime, Marker::TimeFormat::HHMMSS);
         YT_TimeStamps << " ";
         YT_TimeStamps << marker.name;
 
-        // FS Entry: "#HH:MM:SS - name"
+        // FS Entry: "#MM:SS - name"
         FS_TimeStamps << '#';
-        FS_TimeStamps << newMarkerStartTS;
+        FS_TimeStamps << markerManager.parseSecsToTime(newStartTime, Marker::TimeFormat::MMSS);
         FS_TimeStamps << " - ";
         FS_TimeStamps << marker.name;
 

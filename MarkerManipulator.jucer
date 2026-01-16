@@ -27,7 +27,7 @@
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="MarkerManipulator"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="MarkerManipulator"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="MarkerManipulator" binaryPath="C:\Users\werer\Desktop\Field Recording\Tool"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../JUCE/modules"/>
